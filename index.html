@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildLess.AI — The autonomous workforce for Plex ERP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0f;
+    color: #e6e6ed;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* Animated gradient backdrop */
+  .gradient-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(56, 110, 220, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(120, 80, 200, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 18px 40px;
+    background: rgba(10, 10, 15, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: #5b8cf5; }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    font-size: 14px;
+  }
+  .nav-links a {
+    color: #9b9bab;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #e6e6ed; }
+  .nav-cta {
+    background: #5b8cf5;
+    color: #fff !important;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+  .nav-cta:hover { background: #4a7ce8; }
+
+  /* Hero */
+  .hero {
+    padding: 180px 40px 120px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(91, 140, 245, 0.1);
+    border: 1px solid rgba(91, 140, 245, 0.25);
+    border-radius: 100px;
+    font-size: 12px;
+    color: #8eaef7;
+    margin-bottom: 28px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .hero h1 {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    background: linear-gradient(180deg, #fff 0%, #b8b8c8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(135deg, #5b8cf5 0%, #8e7ae0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p.subhead {
+    font-size: 21px;
+    color: #9b9bab;
+    max-width: 680px;
+    margin: 0 auto 44px;
+    line-height: 1.5;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: #5b8cf5;
+    color: #fff;
+    padding: 14px 26px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.2s;
+    border: 1px solid #5b8cf5;
+  }
+  .btn-primary:hover {
+    background: #4a7ce8;
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #e6e6ed;
+    padding: 14px 26px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  /* Manufacturing flow visualization */
+  .network-frame {
+    background: #0e0e17;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+  .network-bar {
+    padding: 14px 20px;
+    background: #14141e;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .network-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    color: #b8b8c8;
+    font-weight: 500;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #4ade80;
+    animation: status-pulse 2s ease-in-out infinite;
+  }
+  @keyframes status-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .network-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: #9b9bab;
+  }
+  .meta-label {
+    color: #5b5b6b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+    font-size: 10px;
+  }
+  #meta-stage {
+    color: #8eaef7;
+    transition: color 0.3s;
+  }
+  .flow-canvas {
+    position: relative;
+    height: 280px;
+    background:
+      linear-gradient(90deg, rgba(91, 140, 245, 0.04) 0%, transparent 30%, transparent 70%, rgba(142, 122, 224, 0.04) 100%),
+      #0a0a14;
+    overflow: hidden;
+  }
+  .network-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Flow stages */
+  .flow-stage {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12%;
+    min-width: 120px;
+    text-align: center;
+    z-index: 2;
+    transition: all 0.4s ease;
+  }
+  .stage-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    background: #15151e;
+    border: 1.5px solid rgba(91, 140, 245, 0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #5b8cf5;
+    font-weight: 600;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+  .stage-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e6e6ed;
+    margin-bottom: 4px;
+    transition: color 0.4s ease;
+  }
+  .stage-desc {
+    font-size: 11px;
+    color: #6b6b7b;
+    line-height: 1.4;
+    transition: color 0.4s ease;
+  }
+
+  /* Active state */
+  .flow-stage.active .stage-icon {
+    background: linear-gradient(135deg, #5b8cf5 0%, #8e7ae0 100%);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(91, 140, 245, 0.5), 0 0 0 6px rgba(91, 140, 245, 0.15);
+    transform: scale(1.08);
+  }
+  .flow-stage.active .stage-label { color: #8eaef7; }
+  .flow-stage.active .stage-desc { color: #9b9bab; }
+
+  /* Completed state */
+  .flow-stage.complete .stage-icon {
+    background: rgba(74, 222, 128, 0.08);
+    border-color: rgba(74, 222, 128, 0.4);
+    color: #4ade80;
+  }
+
+  /* SVG flow path */
+  .flow-path {
+    stroke: rgba(91, 140, 245, 0.15);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 4 6;
+  }
+  .flow-path.active { stroke: rgba(91, 140, 245, 0.5); }
+  .flow-pulse {
+    fill: #5b8cf5;
+    filter: drop-shadow(0 0 8px #5b8cf5);
+  }
+
+  /* Activity ticker */
+  .activity-ticker {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    background: rgba(20, 20, 30, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 5;
+    overflow: hidden;
+  }
+  .ticker-label {
+    font-size: 10px;
+    color: #4ade80;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .ticker-feed {
+    font-size: 12px;
+    color: #b8b8c8;
+    font-family: 'SF Mono', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+  .ticker-feed .agent-name {
+    color: #8eaef7;
+    margin-right: 6px;
+    font-weight: 600;
+  }
+  .ticker-feed .arrow { color: #5b5b6b; margin: 0 8px; }
+  .ticker-feed.fade-in { animation: fade-in-up 0.4s ease-out; }
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .flow-canvas { height: auto; padding: 30px 20px 80px; }
+    .flow-stage {
+      position: relative; left: 0 !important; top: 0;
+      transform: none; width: 100%; min-width: 0;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 16px; text-align: left;
+    }
+    .stage-icon { margin: 0; flex-shrink: 0; }
+    .network-svg { display: none; }
+  }
+
+  /* Stats */
+  .stats-row {
+    max-width: 1000px;
+    margin: 0 auto 100px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .stat .value {
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #5b8cf5 0%, #8e7ae0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+  .stat .label {
+    font-size: 13px;
+    color: #6b6b7b;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Sections */
+  section { padding: 100px 40px; position: relative; z-index: 1; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .eyebrow {
+    font-size: 13px; color: #5b8cf5;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 48px; font-weight: 700;
+    letter-spacing: -0.025em; margin-bottom: 18px; line-height: 1.1;
+  }
+  .section-subtitle {
+    font-size: 18px; color: #9b9bab;
+    max-width: 620px; margin-bottom: 60px;
+  }
+
+  /* Problem */
+  .problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .problem-card {
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .problem-card .icon {
+    width: 38px; height: 38px;
+    background: rgba(91, 140, 245, 0.1);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px; color: #5b8cf5; font-size: 18px;
+  }
+  .problem-card h3 { font-size: 18px; margin-bottom: 8px; font-weight: 600; }
+  .problem-card p { color: #9b9bab; font-size: 14px; line-height: 1.6; }
+
+  /* Agents */
+  .agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .agent-card {
+    padding: 28px;
+    background: linear-gradient(180deg, rgba(91, 140, 245, 0.04) 0%, rgba(91, 140, 245, 0) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    transition: all 0.3s;
+  }
+  .agent-card:hover { border-color: rgba(91, 140, 245, 0.3); transform: translateY(-3px); }
+  .agent-badge {
+    display: inline-block; font-family: 'SF Mono', monospace;
+    font-size: 11px; color: #5b8cf5; background: rgba(91, 140, 245, 0.1);
+    padding: 3px 8px; border-radius: 5px; margin-bottom: 16px;
+  }
+  .agent-card h3 { font-size: 20px; margin-bottom: 10px; font-weight: 600; }
+  .agent-card p { color: #9b9bab; font-size: 14px; line-height: 1.6; margin-bottom: 18px; }
+  .agent-card .example {
+    font-style: italic; color: #6b6b7b; font-size: 13px;
+    padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* How it works */
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .how-step { padding: 24px 0; }
+  .how-step .step-num {
+    font-size: 14px; color: #5b8cf5; font-weight: 600;
+    margin-bottom: 14px; font-family: 'SF Mono', monospace;
+  }
+  .how-step h3 { font-size: 22px; margin-bottom: 10px; font-weight: 600; }
+  .how-step p { color: #9b9bab; font-size: 14px; line-height: 1.6; }
+
+  /* Footer CTA */
+  .footer-cta {
+    text-align: center; padding: 120px 40px;
+    background: linear-gradient(180deg, transparent 0%, rgba(91, 140, 245, 0.05) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .footer-cta h2 {
+    font-size: 56px; font-weight: 700;
+    letter-spacing: -0.025em; margin-bottom: 18px; line-height: 1.05;
+  }
+  .footer-cta p {
+    color: #9b9bab; font-size: 18px; margin-bottom: 36px;
+    max-width: 560px; margin-left: auto; margin-right: auto;
+  }
+
+  footer {
+    padding: 40px; text-align: center;
+    color: #5b5b6b; font-size: 13px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 44px; }
+    .hero p.subhead { font-size: 17px; }
+    .section-title { font-size: 34px; }
+    .problem-grid, .agents-grid, .how-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+    .footer-cta h2 { font-size: 38px; }
+    .nav-links a:not(.nav-cta) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gradient-bg"></div>
+
+<nav>
+  <div class="logo">BuildLess<span>.ai</span></div>
+  <div class="nav-links">
+    <a href="#agents">Agents</a>
+    <a href="#how">How it works</a>
+    <a href="#cta" class="nav-cta">Request demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">Now live for Plex ERP · NetSuite + Epicor coming 2026</div>
+  <h1>The autonomous workforce<br>for <span class="accent">manufacturing ERP</span>.</h1>
+  <p class="subhead">BuildLess turns every step of your manufacturing process into autonomous action — from quote to cash. Six AI agents working in sequence, fully connected to Plex.</p>
+  <div class="hero-ctas">
+    <a href="#cta" class="btn-primary">Request a demo →</a>
+    <a href="#agents" class="btn-secondary">See the agents</a>
+  </div>
+</div>
+
+<!-- AGENT FLOW VISUALIZATION -->
+<div style="max-width:1100px;margin:0 auto 60px;padding:0 40px;position:relative;z-index:1;">
+  <div class="network-frame">
+    <div class="network-bar">
+      <div class="network-status">
+        <div class="status-dot"></div>
+        <span>Manufacturing flow · live</span>
+      </div>
+      <div class="network-meta">
+        <span class="meta-item"><span class="meta-label">Stage</span> <span id="meta-stage">Quote</span></span>
+        <span class="meta-item"><span class="meta-label">Plex tenant</span> connected</span>
+      </div>
+    </div>
+    <div class="flow-canvas" id="canvas">
+      <svg class="network-svg" id="network-svg" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <div class="flow-stage" data-stage="0" style="left:4%;">
+        <div class="stage-icon">$</div>
+        <div class="stage-label">Quoting Agent</div>
+        <div class="stage-desc">Recommends pricing from CRM signals</div>
+      </div>
+      <div class="flow-stage" data-stage="1" style="left:20%;">
+        <div class="stage-icon">⊞</div>
+        <div class="stage-label">Order Entry</div>
+        <div class="stage-desc">Pushes demand into Plex</div>
+      </div>
+      <div class="flow-stage" data-stage="2" style="left:36%;">
+        <div class="stage-icon">◫</div>
+        <div class="stage-label">Scheduling Agent</div>
+        <div class="stage-desc">Sequences jobs across the floor</div>
+      </div>
+      <div class="flow-stage" data-stage="3" style="left:52%;">
+        <div class="stage-icon">◉</div>
+        <div class="stage-label">MRP Agent</div>
+        <div class="stage-desc">Orders raw materials to fulfill jobs</div>
+      </div>
+      <div class="flow-stage" data-stage="4" style="left:68%;">
+        <div class="stage-icon">⟁</div>
+        <div class="stage-label">Job Cost Analyzer</div>
+        <div class="stage-desc">Identifies bottlenecks in real time</div>
+      </div>
+      <div class="flow-stage" data-stage="5" style="left:84%;">
+        <div class="stage-icon">✓</div>
+        <div class="stage-label">Deposit Automation</div>
+        <div class="stage-desc">Matches remittances to AR invoices</div>
+      </div>
+
+      <div class="activity-ticker" id="ticker">
+        <div class="ticker-label">Live</div>
+        <div class="ticker-feed" id="feed"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="value">20+</div><div class="label">Plex API endpoints</div></div>
+  <div class="stat"><div class="value">6</div><div class="label">Agent domains</div></div>
+  <div class="stat"><div class="value">24/7</div><div class="label">Autonomous operation</div></div>
+  <div class="stat"><div class="value">100%</div><div class="label">Founder-built</div></div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-inner">
+    <div class="eyebrow">The problem</div>
+    <h2 class="section-title">Your ERP data is rich.<br>Your decisions are slow.</h2>
+    <p class="section-subtitle">Manufacturing teams spend hours every week running reports, copying data between screens, and hunting for exceptions that should have been flagged the moment they happened.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">⏱</div>
+        <h3>Exceptions discovered too late</h3>
+        <p>Stockouts, BOM gaps, expired lots, and scrap spikes surface hours or days after they happen — costing real money in carrying costs and emergency expedites.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">⛌</div>
+        <h3>Every report is a project</h3>
+        <p>Workflow improvements require custom reports, a SQL developer, or a $250K consulting engagement. Most teams just live with the gaps.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">⌒</div>
+        <h3>Skilled labor wasted on retrieval</h3>
+        <p>Your most experienced operators spend hours every day pulling data instead of making decisions. Labor shortages make this unsustainable.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">↯</div>
+        <h3>Decisions are reactive, not proactive</h3>
+        <p>By the time the right person sees the right number, the moment to act has passed. ERP becomes a record of what happened — not a tool to shape what's next.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="section-inner">
+    <div class="eyebrow">The agents</div>
+    <h2 class="section-title">Six agents.<br>One manufacturing flow.</h2>
+    <p class="section-subtitle">From the moment a customer asks for a quote to the moment cash hits your account — BuildLess runs the workflow in between.</p>
+    <div class="agents-grid">
+      <div class="agent-card">
+        <div class="agent-badge">INVENTORY</div>
+        <h3>MRP Agent</h3>
+        <p>Reads open demand and on-hand inventory. Recommends purchase actions for non-EDI material, with a clear weekly view of what to order and when.</p>
+        <div class="example">"What should I order this week?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">QUALITY</div>
+        <h3>Scrap Analyzer</h3>
+        <p>Summarizes daily scrap by reason code, part, and operation. Surfaces trends before they become this month's quality problem.</p>
+        <div class="example">"Which parts are trending toward a scrap crisis?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">PRODUCTION</div>
+        <h3>BOM Readiness</h3>
+        <p>Before a work order is released, verifies every component is in stock at the right quantity, location, and conformance status. No more mid-run shutdowns.</p>
+        <div class="example">"Can we run WO-44892 today?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">RECEIVING</div>
+        <h3>Order Entry</h3>
+        <p>Parses customer PO PDFs and produces a structured sales order draft in Plex — ready for review and approval in seconds, not hours.</p>
+        <div class="example">"Process the 14 POs that came in overnight."</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">SHIPPING</div>
+        <h3>Shipment Readiness</h3>
+        <p>Confirms every container on a shipment is OK status before staging. Surfaces lot conformance issues before they reach the customer.</p>
+        <div class="example">"Is shipment SH-2287 ready to ship?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">BUILD YOUR OWN</div>
+        <h3>Agent Builder</h3>
+        <p>Define your own agent in natural language. Choose its tools, schedule it, and let it run. Your operational knowledge, automated.</p>
+        <div class="example">"Every Monday at 6am, check…"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="eyebrow">How it works</div>
+    <h2 class="section-title">Connects to Plex.<br>Acts on your behalf.</h2>
+    <p class="section-subtitle">No rip-and-replace. No custom development. BuildLess connects to your existing Plex environment through the Plex Connect API.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">01 / CONNECT</div>
+        <h3>Plug into Plex</h3>
+        <p>Connect to your Plex tenant in minutes using the Plex Connect API. Your data stays in Plex — BuildLess reads and acts through standard, audited endpoints.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02 / DEPLOY</div>
+        <h3>Activate agents</h3>
+        <p>Choose from pre-built agents for inventory, BOM, receiving, shipping, and quality. Or build your own for the workflows that matter most to your floor.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03 / RUN</div>
+        <h3>Let them work</h3>
+        <p>Agents run on demand or on a schedule. They surface exceptions, draft actions, and wait for your approval. You stay in control. They do the heavy lifting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<div class="footer-cta" id="cta">
+  <h2>See what your ERP could<br>actually do for you.</h2>
+  <p>Request a demo. We'll walk through your specific workflows and show you exactly which agents fit your operation.</p>
+  <a href="mailto:nathan@buildless.ai" class="btn-primary">Request a demo →</a>
+</div>
+
+<footer>
+  © 2026 BuildLess.AI · Built on Plex Connect API · Powered by Anthropic Claude
+</footer>
+
+<script>
+  const svg = document.getElementById('network-svg');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const stages = [
+    { x: 100, name: 'Quoting Agent',      message: 'New RFQ from CRM · pricing recommended at $124,800' },
+    { x: 260, name: 'Order Entry',         message: 'Customer PO accepted · sales order created in Plex' },
+    { x: 420, name: 'Scheduling Agent',    message: 'Jobs sequenced across Work Centers 02, 04, 07' },
+    { x: 580, name: 'MRP Agent',           message: 'Raw materials ordered · 3 POs to approved suppliers' },
+    { x: 740, name: 'Job Cost Analyzer',   message: 'Bottleneck detected at Op 30 · variance flagged' },
+    { x: 900, name: 'Deposit Automation',  message: 'Remittance matched to invoice INV-30922 · cleared' }
+  ];
+  const Y = 130;
+
+  for (let i = 0; i < stages.length - 1; i++) {
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('class', 'flow-path');
+    line.setAttribute('x1', stages[i].x + 32);
+    line.setAttribute('y1', Y);
+    line.setAttribute('x2', stages[i+1].x - 32);
+    line.setAttribute('y2', Y);
+    line.setAttribute('data-segment', i);
+    svg.appendChild(line);
+  }
+
+  function animateFlowPulse(fromX, toX) {
+    const circle = document.createElementNS(SVG_NS, 'circle');
+    circle.setAttribute('class', 'flow-pulse');
+    circle.setAttribute('r', '4');
+    circle.setAttribute('cx', fromX);
+    circle.setAttribute('cy', Y);
+    svg.appendChild(circle);
+    const anim = document.createElementNS(SVG_NS, 'animate');
+    anim.setAttribute('attributeName', 'cx');
+    anim.setAttribute('from', fromX);
+    anim.setAttribute('to', toX);
+    anim.setAttribute('dur', '900ms');
+    anim.setAttribute('fill', 'freeze');
+    circle.appendChild(anim);
+    anim.beginElement();
+    setTimeout(() => circle.remove(), 950);
+  }
+
+  function updateTicker(agentName, msg, nextAgent = null) {
+    const feed = document.getElementById('feed');
+    const arrow = nextAgent ? ` <span class="arrow">→</span> <span class="agent-name">${nextAgent}</span>` : '';
+    feed.innerHTML = `<span class="agent-name">${agentName}</span>${arrow} · ${msg}`;
+    feed.classList.remove('fade-in');
+    void feed.offsetWidth;
+    feed.classList.add('fade-in');
+  }
+
+  function activateStage(idx) {
+    const stageEl = document.querySelector(`.flow-stage[data-stage="${idx}"]`);
+    const stage = stages[idx];
+    const nextStage = idx < stages.length - 1 ? stages[idx + 1] : null;
+    const segment = idx < stages.length - 1 ? document.querySelector(`.flow-path[data-segment="${idx}"]`) : null;
+
+    stageEl.classList.add('active');
+    document.getElementById('meta-stage').textContent = stage.name.replace(' Agent', '').replace(' Automation', '');
+    updateTicker(stage.name, stage.message, nextStage ? nextStage.name : null);
+
+    setTimeout(() => {
+      stageEl.classList.remove('active');
+      stageEl.classList.add('complete');
+      if (segment) {
+        segment.classList.add('active');
+        animateFlowPulse(stage.x + 32, stages[idx + 1].x - 32);
+      }
+    }, 1800);
+  }
+
+  function resetFlow() {
+    document.querySelectorAll('.flow-stage').forEach(el => el.classList.remove('active', 'complete'));
+    document.querySelectorAll('.flow-path').forEach(el => el.classList.remove('active'));
+  }
+
+  async function runFlow() {
+    resetFlow();
+    await new Promise(r => setTimeout(r, 400));
+    for (let i = 0; i < stages.length; i++) {
+      activateStage(i);
+      await new Promise(r => setTimeout(r, 2400));
+    }
+    updateTicker('Flow complete', 'cycle finished · ready for next order');
+    await new Promise(r => setTimeout(r, 2200));
+  }
+
+  async function loop() {
+    while (true) { await runFlow(); }
+  }
+
+  setTimeout(() => {
+    updateTicker('System', 'Manufacturing flow online · waiting for inbound demand');
+    setTimeout(loop, 1500);
+  }, 500);
+</script>
+</body>
+</html>
