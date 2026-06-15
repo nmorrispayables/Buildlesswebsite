@@ -439,6 +439,17 @@
     font-style: italic; color: #6b6b7b; font-size: 13px;
     padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
+  .agent-card.agent-card--wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: 40px;
+  }
+  .agent-card--wide .agent-badge { grid-column: 1 / -1; }
+  .agent-card--wide h3 { font-size: 26px; grid-column: 1; align-self: start; }
+  .agent-card--wide p { grid-column: 2; grid-row: 2 / 4; align-self: start; margin-bottom: 0; }
+  .agent-card--wide .example { grid-column: 1; align-self: end; }
 
   /* How it works */
   .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
@@ -609,39 +620,45 @@
     <p class="section-subtitle">From the moment a customer asks for a quote to the moment cash hits your account — BuildLess runs the workflow in between.</p>
     <div class="agents-grid">
       <div class="agent-card">
-        <div class="agent-badge">INVENTORY</div>
-        <h3>MRP Agent</h3>
-        <p>Reads open demand and on-hand inventory. Recommends purchase actions for non-EDI material, with a clear weekly view of what to order and when.</p>
-        <div class="example">"What should I order this week?"</div>
-      </div>
-      <div class="agent-card">
-        <div class="agent-badge">QUALITY</div>
-        <h3>Scrap Analyzer</h3>
-        <p>Summarizes daily scrap by reason code, part, and operation. Surfaces trends before they become this month's quality problem.</p>
-        <div class="example">"Which parts are trending toward a scrap crisis?"</div>
-      </div>
-      <div class="agent-card">
-        <div class="agent-badge">PRODUCTION</div>
-        <h3>BOM Readiness</h3>
-        <p>Before a work order is released, verifies every component is in stock at the right quantity, location, and conformance status. No more mid-run shutdowns.</p>
-        <div class="example">"Can we run WO-44892 today?"</div>
+        <div class="agent-badge">SALES</div>
+        <h3>Quoting Agent</h3>
+        <p>Reads CRM signals, historical pricing, and margin targets to recommend a quote — in seconds. No more gut-feel pricing or waiting on a sales engineer.</p>
+        <div class="example">"What should we quote for this RFQ?"</div>
       </div>
       <div class="agent-card">
         <div class="agent-badge">RECEIVING</div>
         <h3>Order Entry</h3>
-        <p>Parses customer PO PDFs and produces a structured sales order draft in Plex — ready for review and approval in seconds, not hours.</p>
+        <p>Parses customer PO PDFs and pushes a structured sales order into Plex — ready for review and approval in seconds, not hours.</p>
         <div class="example">"Process the 14 POs that came in overnight."</div>
       </div>
       <div class="agent-card">
-        <div class="agent-badge">SHIPPING</div>
-        <h3>Shipment Readiness</h3>
-        <p>Confirms every container on a shipment is OK status before staging. Surfaces lot conformance issues before they reach the customer.</p>
-        <div class="example">"Is shipment SH-2287 ready to ship?"</div>
+        <div class="agent-badge">PRODUCTION</div>
+        <h3>Scheduling Agent</h3>
+        <p>Sequences work orders across the floor based on due dates, machine availability, and capacity constraints. Keeps jobs moving without the manual shuffle.</p>
+        <div class="example">"Sequence the floor for this week."</div>
       </div>
       <div class="agent-card">
+        <div class="agent-badge">INVENTORY</div>
+        <h3>MRP Agent</h3>
+        <p>Reads open demand and on-hand inventory. Recommends purchase actions for non-EDI material, with a clear view of what to order and when.</p>
+        <div class="example">"What raw materials do I need to order?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">FINANCE</div>
+        <h3>Job Cost Analyzer</h3>
+        <p>Monitors job costs in real time and flags variance before it compounds. Surfaces bottlenecks and overruns the moment they appear on the floor.</p>
+        <div class="example">"Which jobs are over budget right now?"</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-badge">ACCOUNTS RECEIVABLE</div>
+        <h3>Deposit Automation</h3>
+        <p>Matches incoming remittances to open AR invoices in Plex. Closes the loop from shipment to cash with no manual reconciliation.</p>
+        <div class="example">"Apply today's deposits to open invoices."</div>
+      </div>
+      <div class="agent-card agent-card--wide">
         <div class="agent-badge">BUILD YOUR OWN</div>
         <h3>Agent Builder</h3>
-        <p>Define your own agent in natural language. Choose its tools, schedule it, and let it run. Your operational knowledge, automated.</p>
+        <p>Define your own agent in natural language. Choose its tools, set its schedule, and let it run. If your team does it on a recurring basis, an agent can do it instead — no code required. Your operational knowledge, automated.</p>
         <div class="example">"Every Monday at 6am, check…"</div>
       </div>
     </div>
